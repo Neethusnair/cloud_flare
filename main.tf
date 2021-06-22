@@ -5,7 +5,15 @@ terraform {
       version = "2.19.2"
     }
   }
-}  
+
+  backend "remote" {
+    organization = "sreyo23"
+
+    workspaces {
+      name = "cloudflare_git"
+    }
+  }
+}
 
 variable "site_domain" {
   type        = string

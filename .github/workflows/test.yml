@@ -25,8 +25,8 @@ jobs:
         # Create new record with latest cluster IP.
         #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
         CLUSTER_IP=34.68.105.175
-        curl -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_DNS_ZONE}/dns_records" \
-           -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
-           -H "X-Auth-Key: ${CLOUDFLARE_API_KEY}" \
+        curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records" \
+           -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+           -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json" \
            --data '{"type":"A","name":"neethu","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

@@ -29,4 +29,4 @@ jobs:
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json" \
-           --data '{"type":"A","name":"neethu","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
+           --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

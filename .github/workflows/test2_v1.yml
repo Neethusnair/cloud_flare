@@ -28,4 +28,4 @@ jobs:
         curl -X GET "https://api.cloudflare.com/client/v4/zones" \
          -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
          -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
-         -H "Content-Type: application/json"
+         #-H "Content-Type: application/json"

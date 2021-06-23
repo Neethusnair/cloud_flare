@@ -26,6 +26,9 @@ jobs:
 
       - name: Terraform Init
         id: init
+        env:
+#           TF_VAR_env: 'dev'
+         TF_VAR_site_domain: 'sreyo.in'
         run: terraform init
 
       - name: Terraform Plan

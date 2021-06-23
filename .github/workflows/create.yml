@@ -23,22 +23,22 @@ jobs:
      - name: Update CloudFlare DNS with Cluster IP   
        run: |-
          # purge any existing records for our GCP subdomain.
-         #existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_DNS_ZONE}/dns_records?type=A&ns" \
-         curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
+         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
+         #curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json"   | jq -r '.result[].id'
-#          for record in ${existing_records[@]}; do
-#            curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_DNS_ZONE}/dns_records/${record}" \
-#              -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
-#              -H "X-Auth-Key: ${CLOUDFLARE_API_KEY}" \
-#              -H "Content-Type: application/json"
-#          done
-#         # Create new record with latest cluster IP.
-#         #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
-#         CLUSTER_IP=34.68.105.175
-#         curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records" \
-#            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
-#            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
-#            -H "Content-Type: application/json" \
-#            --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
+         for record in ${existing_records[@]}; do
+           curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records/${record}" \
+             -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+             -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+             -H "Content-Type: application/json"
+         done
+         # Create new record with latest cluster IP.
+         #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
+         CLUSTER_IP=34.68.105.175
+         curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records" \
+           -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+           -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+           -H "Content-Type: application/json" \
+           --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

@@ -1,0 +1,32 @@
+name: Create subdomian in CF
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+     - name: Checkout
+       uses: actions/checkout@v2
+       
+     - name: Update CloudFlare DNS with Cluster IP   
+       run: |-
+        # Create new record with latest cluster IP.
+        #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
+        CLUSTER_IP=34.68.105.175
+        curl -X POST "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_DNS_ZONE}/dns_records" \
+           -H "X-Auth-Email: ${CLOUDFLARE_EMAIL}" \
+           -H "X-Auth-Key: ${CLOUDFLARE_API_KEY}" \
+           -H "Content-Type: application/json" \
+           --data '{"type":"A","name":"neethu","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

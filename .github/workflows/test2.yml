@@ -1,4 +1,4 @@
-name: Create subdomian in CF
+name: Get zone id from CF
 
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
@@ -26,6 +26,6 @@ jobs:
         #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
         #CLUSTER_IP=34.68.105.175
         curl -X GET "https://api.cloudflare.com/client/v4/zones" \
-        -H "X-Auth-Email: user@example.com" \
-        -H "X-Auth-Key: c2547eb745079dac9320b638f5e225cf483cc5cfdda41" \
-        -H "Content-Type: application/json"
+         -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+         -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+         -H "Content-Type: application/json"

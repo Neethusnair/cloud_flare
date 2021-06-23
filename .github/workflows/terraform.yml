@@ -28,7 +28,7 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Terraform Plan
+      - name: Terraform Plan -var "site_domain=sreyo.in"
         id: plan
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color

@@ -24,11 +24,11 @@ jobs:
        run: |-
          # purge any existing records for our GCP subdomain.
          #existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
-         #curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
-         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=ns" \
+         curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
+         #existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=ns" \
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
-           -H "Content-Type: application/json"   | jq -r '.result[].id') )
+           -H "Content-Type: application/json"   | jq -r '.result[].id'
 #          for record in ${existing_records[@]}; do
 #            curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records/${record}" \
 #              -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \

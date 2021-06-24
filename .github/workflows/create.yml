@@ -31,12 +31,12 @@ jobs:
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json"   | jq -r '.result[].id') )
-#          for record in ${existing_records[@]}; do
-#            curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records/${record}" \
-#              -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
-#              -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
-#              -H "Content-Type: application/json"
-#          done
+         for record in ${existing_records[@]}; do
+           curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records/${record}" \
+             -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+             -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+             -H "Content-Type: application/json"
+         done
 #          # Create new record with latest cluster IP.
 #          #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
 #          CLUSTER_IP=34.68.105.175

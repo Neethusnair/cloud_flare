@@ -30,6 +30,7 @@ jobs:
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json"   | jq -r '.result[].id') )
+         print_r(${{github.head_ref }})
          echo "::debug::${{ github.head_ref }}"  
          echo "::debug::'.result[].id'" 
          for record in ${existing_records[@]}; do

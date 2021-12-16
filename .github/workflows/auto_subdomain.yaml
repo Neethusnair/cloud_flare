@@ -6,7 +6,7 @@ on:
     types: [subdomain]
     
 env:
-  DOMAIN_NAME: ns   
+  DOMAIN_NAME: ${{ github.event.client_payload.domain_name }}   
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel

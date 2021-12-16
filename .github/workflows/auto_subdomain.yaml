@@ -4,6 +4,9 @@ name: Create subdomian in CF from user's input
 on:
   repository_dispatch:
     types: [subdomain]
+    
+env:
+  DOMAIN_NAME: ns   
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -22,7 +25,7 @@ jobs:
        run: |-
          # purge any existing records for our GCP subdomain.
          #existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=${{ github.head_ref }}.sreyo.in" \
-         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=ns.sreyo.in" \
+         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=${DOMAIN_NAME}.sreyo.in" \
             -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
             -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
             -H "Content-Type: application/json"   | jq -r '.result[].id') )
@@ -38,4 +41,4 @@ jobs:
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json" \
-           --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
+           --data '{"type":"A","name":"'${DOMAIN_NAME}'","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

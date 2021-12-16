@@ -1,0 +1,43 @@
+name: Create subdomian in CF from user's input 
+
+# Triggers the workflow on api call
+on:
+  repository_dispatch:
+    types: [subdomain]
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+     - name: Checkout
+       uses: actions/checkout@v2
+       
+     - name: Update CloudFlare DNS with Cluster IP 
+       run: |-
+         # purge any existing records for our GCP subdomain.
+         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=ns.sreyo.in" \ 
+           -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+           -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+           -H "Content-Type: application/json"   | jq -r '.result[].id') )
+         #print_r(${{github.head_ref }})
+         #echo "::debug::${{ github.head_ref }}"  
+         #echo "::debug::'.result[].id'" 
+         for record in ${existing_records[@]}; do
+           curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records/${record}" \
+             -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+             -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+             -H "Content-Type: application/json"
+         done
+         # Create new record with latest cluster IP.
+         CLUSTER_IP=34.136.63.109
+         curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records" \
+           -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+           -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+           -H "Content-Type: application/json" \
+           --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

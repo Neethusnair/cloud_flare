@@ -1,6 +1,7 @@
 name: Create subdomian in CF
 
-#on:
+on:
+  workflow_dispatch
   ## Triggers the workflow on push or pull request events but only for the main branch
 #  push:
 #   branches: [ main ]
@@ -26,13 +27,14 @@ jobs:
          #existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&ns" \
          #curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=ns.sreyo.in" \
          #curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=${{ github.head_ref }}.sreyo.in" \
-         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=${{ github.head_ref }}.sreyo.in" \
+         #existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=${{ github.head_ref }}.sreyo.in" \
+         existing_records=( $(curl -X GET "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records?type=A&name=ns.sreyo.in" \ 
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json"   | jq -r '.result[].id') )
-         print_r(${{github.head_ref }})
-         echo "::debug::${{ github.head_ref }}"  
-         echo "::debug::'.result[].id'" 
+         #print_r(${{github.head_ref }})
+         #echo "::debug::${{ github.head_ref }}"  
+         #echo "::debug::'.result[].id'" 
          for record in ${existing_records[@]}; do
            curl -X DELETE "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records/${record}" \
              -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
@@ -42,9 +44,10 @@ jobs:
 
          # Create new record with latest cluster IP.
          #CLUSTER_IP=$(kubectl get service circleci-k8s-demo -o go-template='{{(index .status.loadBalancer.ingress 0).ip}}')
-         CLUSTER_IP=34.136.63.109
+         CLUSTER_IP=34.136.63.108
          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records" \
            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
            -H "Content-Type: application/json" \
-           --data '{"type":"A","name":"${{ github.head_ref }}","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
+           #--data '{"type":"A","name":"${{ github.head_ref }}","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
+           --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'

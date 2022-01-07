@@ -32,12 +32,13 @@ jobs:
       
          # Create new record with latest cluster IP.
          #CLUSTER_IP=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-         CLUSTER_IP=34.136.63.108
+         CLUSTER_IP= "example.com"
          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/dns_records" \
             -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
             -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
             -H "Content-Type: application/json" \
-            --data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
+            --data '{"name":"AWS","origins":[{"name":"nss","address":"'${CLUSTER_IP}'","enabled":true,"weight":1}]}'
+            #--data '{"type":"A","name":"ns","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
             #--data '{"type":"A","name":"${{ github.head_ref }}","content":"'${CLUSTER_IP}'","ttl":120,"priority":10,"proxied":true}'
 
          # purge any existing records for our GCP subdomain.

@@ -22,5 +22,5 @@ jobs:
        uses: actions/checkout@v2
        
      - name: Update CloudFlare DNS with Cluster IP 
-       run: |-
+       run: |
          echo "JSON"

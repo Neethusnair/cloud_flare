@@ -30,7 +30,13 @@ jobs:
               -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
               -H "Content-Type: application/json"
          done
-      
+         
+         curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_DNS_ZONE }}/purge_cache" \
+            -H "X-Auth-Email: ${{ secrets.CLOUDFLARE_EMAIL }}" \
+            -H "X-Auth-Key: ${{ secrets.CLOUDFLARE_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            --data '{"files":["http://www.ns.sreyo.in"]}'
+         
          # Create new record with latest cluster IP.
          #CLUSTER_IP=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
          CLUSTER_IP=example.com
